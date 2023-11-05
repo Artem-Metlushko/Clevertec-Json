@@ -14,7 +14,7 @@ class UtilTest {
         Computer expected = TestData.builder().build().buildComputer();
 
         //when
-        Computer actual = Util.convertJsonToInstance(jsonForComputer, Computer.class);
+        Computer actual = Util.toInstance(jsonForComputer, Computer.class);
 
         //then
         assertEquals(expected,actual);
