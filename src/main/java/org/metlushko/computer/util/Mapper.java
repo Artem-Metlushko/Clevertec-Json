@@ -3,6 +3,7 @@ package org.metlushko.computer.util;
 import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
@@ -49,9 +50,10 @@ public class Mapper {
             Object value = field.get(obj);
             String nameType = field.getType().getSimpleName();
 
-            json.append("\"").append(nameType).append("\":");
+            json.append("\"").append(field.getName()).append("\":");
             switch (nameType) {
-                case "String", "UUID", "Double" ,"LocalDateTime" -> json.append("\"").append(value).append("\",");
+                case "String", "UUID" ,"LocalDate" -> json.append("\"").append(value).append("\",");
+                case "Double"-> json.append(value).append(",");
                 default -> json.append("empty");
             }
         } catch (Exception e) {
@@ -106,7 +108,7 @@ public class Mapper {
                 case "String" -> f.set(newInstance, currentValue);
                 case "UUID" -> f.set(newInstance, UUID.fromString(currentValue));
                 case "Double" -> f.set(newInstance, Double.valueOf(currentValue));
-                case "LocalDateTime" -> f.set(newInstance, LocalDateTime.parse(currentValue));
+                case "LocalDate" -> f.set(newInstance, LocalDate.parse(currentValue));
                 default -> f.set(newInstance, null);
             }
         } catch (Exception e) {

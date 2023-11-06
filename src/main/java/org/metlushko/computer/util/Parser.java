@@ -6,14 +6,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Parser {
-    public static Map<String, String> parseJsonToMap(String json) {
+    public static Map<String, String> parseJsonToMapStrings(String json) {
         return Arrays.stream((json.substring(1, json.length() - 1).split(",")))
-                .map(s -> s.split(": "))
+                .map(s -> s.split(":"))
                 .collect(Collectors.toMap(key -> key[0].trim().replace("\"", ""),
                         value -> value[1].trim().replace("\"", "")));
     }
 
-    public static Map<String, String> parseJsonToMapStrings(String json) {
+    public static Map<String, String> parseJsonToMap(String json) {
         Map<String, String> map = new HashMap<>();
         String regex="\"(.*?)\"";
         Matcher matcher = Pattern.compile(regex).matcher(json);

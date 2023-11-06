@@ -50,27 +50,6 @@ public class Util {
     public static void main(String[] args) throws IllegalAccessException {
         String jsonComputer = "{\"id\":\"bb22f153-5ca3-4af9-847d-527549641e02\",\"brand\":\"Samsung\",\"model\":\"xxx\",\"price\":100.0,\"dateTime\":\"1964-02-03\"}";
 
-        String jsonCustomer = "{\n" +
-                "  \"UUID\": \"bb22f153-5ca3-4af9-847d-527549641e02\",\n" +
-                "  \"name\": \"BobDilan\",\n" +
-                "  \"dateBirthday\": \"1961-11-14T10:45\",\n" +
-                "  \"computers\": [\n" +
-                "    {\n" +
-                "      \"id\": \"bb22f153-5ca3-4af9-847d-527549641e02\",\n" +
-                "      \"brand\": \"Nokia\",\n" +
-                "      \"model\": \"X100\",\n" +
-                "      \"price\": \"999.99\",\n" +
-                "      \"dateTime\": \"1961-11-14T10:45\"\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"id\": \"bb22f153-5ca3-4af9-847d-527549641e02\",\n" +
-                "      \"brand\": \"Nokia\",\n" +
-                "      \"model\": \"X100\",\n" +
-                "      \"price\": \"999.99\",\n" +
-                "      \"dateTime\": \"1961-11-14T10:45\"\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}";
         Computer computer1 = new Computer(UUID.fromString("bb22f153-5ca3-4af9-847d-527549641e02"),
                 "Samsung", "xxx", 100.0, LocalDate.of(1964, Month.FEBRUARY, 3)); ;
 
@@ -82,17 +61,17 @@ public class Util {
                 "BobDilan",LocalDateTime.of(1961, 11, 14, 10, 45), arrayList);
 
 
-        /*System.out.println("===>toInstance(jsonComputer, Computer.class) =  "+toInstance(jsonComputer, Computer.class));
+        System.out.println("===>toInstance(jsonComputer, Computer.class) =  "+toInstance(jsonComputer, Computer.class));
         System.out.println();
 
-        System.out.println("===>toJson(Computer.class,computer1) =  "+toJson(Computer.class,computer1));
-        System.out.println();*/
+        /*System.out.println(toJson(Computer.class,computer1));
+        System.out.println(jsonComputer);*/
 
-        /*System.out.println("===>toInstance(jsonCustomer, Customer.class)) =  "+toInstance(jsonCustomer, Engineer.class));
+        /*System.out.println("===>toInstance(jsonCustomer, Customer.class)) =  "+toInstance(jsonComputer, Engineer.class));
         System.out.println();*/
 
 //        System.out.println(jackionToJson(computer1));
-        System.out.println(jackionToObject(jsonComputer, Computer.class));
+//        System.out.println(jackionToObject(jsonComputer, Computer.class));
 
 
     }
