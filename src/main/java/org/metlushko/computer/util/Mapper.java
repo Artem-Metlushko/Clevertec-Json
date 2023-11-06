@@ -3,6 +3,7 @@ package org.metlushko.computer.util;
 import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
@@ -50,7 +51,7 @@ public class Mapper {
 
             json.append("\"").append(nameType).append("\":");
             switch (nameType) {
-                case "String", "UUID", "Double" -> json.append("\"").append(value).append("\",");
+                case "String", "UUID", "Double" ,"LocalDateTime" -> json.append("\"").append(value).append("\",");
                 default -> json.append("empty");
             }
         } catch (Exception e) {
@@ -58,7 +59,7 @@ public class Mapper {
         }
     }
 
-    public static <T> String toJson2(Class<T> clazz, T obj) {
+/*    public static <T> String toJson2(Class<T> clazz, T obj) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
 
@@ -94,7 +95,7 @@ public class Mapper {
 
         sb.append("}");
         return sb.toString();
-    }
+    }*/
 
 
     private static <T> void setValueIntoInstance(T newInstance, Field f, Map<String, String> mapFields) {
@@ -105,6 +106,7 @@ public class Mapper {
                 case "String" -> f.set(newInstance, currentValue);
                 case "UUID" -> f.set(newInstance, UUID.fromString(currentValue));
                 case "Double" -> f.set(newInstance, Double.valueOf(currentValue));
+                case "LocalDateTime" -> f.set(newInstance, LocalDateTime.parse(currentValue));
                 default -> f.set(newInstance, null);
             }
         } catch (Exception e) {

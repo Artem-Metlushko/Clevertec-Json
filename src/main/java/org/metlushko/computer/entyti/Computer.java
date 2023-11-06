@@ -1,9 +1,12 @@
 package org.metlushko.computer.entyti;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.UUID;
 @Data
 @NoArgsConstructor
@@ -14,5 +17,8 @@ public class Computer {
     private String brand;
     private String model;
     private Double price;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate dateTime;
 
 }

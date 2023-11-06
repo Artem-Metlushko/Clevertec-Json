@@ -13,7 +13,7 @@ import java.util.UUID;
 public class Order {
 
     private UUID id;
-    private List<Computer> computers;
+    private List<Engineer> engineers;
     private LocalDateTime created;
 
 }

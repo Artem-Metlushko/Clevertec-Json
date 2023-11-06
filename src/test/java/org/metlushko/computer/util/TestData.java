@@ -33,14 +33,15 @@ public class TestData {
             "  \"id\": \"bb22f153-5ca3-4af9-847d-527549641e02\",\n" +
             "  \"brand\": \"Nokia\",\n" +
             "  \"model\": \"X100\",\n" +
-            "  \"price\": \"999.99\"\n" +
+            "  \"price\": \"999.99\",\n" +
+            "  \"dateTime\": \"1961-11-14T10:45\"\n" +
             "}";
 
     @Builder.Default
     private Double price = 999.99;
 
     public Computer buildComputer(){
-       return new Computer(id,brand,model,price);
+       return new Computer(id,brand,model,price,dateBirthday);
     }
 
     public String buildJsonForComputer(){
