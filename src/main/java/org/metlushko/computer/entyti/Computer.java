@@ -14,11 +14,15 @@ import java.util.UUID;
 public class Computer {
 
     private UUID id;
+
     private String brand;
+
     private String model;
+
     private Double price;
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+
     @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate dateTime;
 
 }

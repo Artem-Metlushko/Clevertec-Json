@@ -1,90 +1,154 @@
 package org.metlushko.computer.util;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import org.metlushko.computer.entyti.enums.JsonType;
+
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Parser {
-    public static Map<String, String> parseJsonToMapStrings(String json) {
-        return Arrays.stream((json.substring(1, json.length() - 1).split(",")))
-                .map(s -> s.split(":"))
-                .collect(Collectors.toMap(key -> key[0].trim().replace("\"", ""),
-                        value -> value[1].trim().replace("\"", "")));
+
+    public static Object parseJSON(String json) {
+        json = json.trim();
+
+        switch (getJsonType(json)) {
+            case OBJECT:
+                Map<String, Object> map = new LinkedHashMap<>();
+                json = json.substring(1, json.length() - 1);
+
+                List<String> pairs = splitJSONPairs(json);
+
+                for (String pair : pairs) {
+                    int colonIndex = findColonIndex(pair);
+                    String key = pair.substring(0, colonIndex).trim().replace("\"", "");
+                    String value = pair.substring(colonIndex + 1).trim();
+                    Object parsedValue = parseJSON(value);
+                    map.put(key, parsedValue);
+                }
+                return map;
+
+            case ARRAY:
+                List<Object> list = new ArrayList<>();
+                json = json.substring(1, json.length() - 1);
+
+                List<String> elements = splitJSONArrayElements(json);
+
+                for (String element : elements) {
+                    list.add(parseJSON(element));
+                }
+                return list;
+
+            case BOOLEAN:
+                return Boolean.parseBoolean(json);
+
+            case NULL:
+                return null;
+
+            case STRING:
+                return json.replace("\"", "");
+
+            case NUMBER:
+                return json.contains(".") ? Double.parseDouble(json) : Long.parseLong(json);
+
+            default:
+                throw new IllegalArgumentException("Unsupported data type: " + json);
+        }
     }
 
-    public static Map<String, String> parseJsonToMap(String json) {
-        Map<String, String> map = new HashMap<>();
-        String regex="\"(.*?)\"";
-        Matcher matcher = Pattern.compile(regex).matcher(json);
-        List<String> keys = new ArrayList<>();
-        while (matcher.find()) {
-            keys.add(matcher.group(1));
+    private static JsonType getJsonType(String json) {
+        if (json.startsWith("{") && json.endsWith("}")) {
+            return JsonType.OBJECT;
+        } else if (json.startsWith("[") && json.endsWith("]")) {
+            return JsonType.ARRAY;
+        } else if (json.equals("true") || json.equals("false")) {
+            return JsonType.BOOLEAN;
+        } else if (json.equals("null")) {
+            return JsonType.NULL;
+        } else if (json.matches("\".*\"")) {
+            return JsonType.STRING;
+        } else if (json.matches("-?\\d+(\\.\\d+)?")) {
+            return JsonType.NUMBER;
+        } else {
+            return JsonType.UNKNOWN;
         }
+    }
 
 
-        String[] values = json.replaceAll("\\s", "").split("\"[^\"]*\":");
-        for (int i = 1; i < values.length; i++) {
-            String value = values[i];
-            if (value.startsWith("{")) {
-                map.put(keys.get(i - 1), parseJsonToMap(value).get(keys.get(i - 1)));
-            } else if (value.startsWith("[")) {
-                List<Object> list = new ArrayList<>();
-                Matcher m = Pattern.compile("\\{.*?}").matcher(value);
-                while (m.find()) {
-                    list.add(parseJsonToMap(m.group()));
+
+
+    private static List<String> splitJSONPairs(String json) {
+        List<String> pairs = new ArrayList<>();
+        int openBraces = 0;
+        int openBrackets = 0;
+        int start = 0;
+
+        for (int i = 0; i < json.length(); i++) {
+            char c = json.charAt(i);
+
+            if (c == '{' || c == '[') {
+                openBraces++;
+                if (c == '[') {
+                    openBrackets++;
                 }
-                map.put(keys.get(i - 1), list.stream().toString());
-            } else {
-                map.put(keys.get(i - 1), value.replaceAll("[\",]", ""));
+            } else if (c == '}' || c == ']') {
+                openBraces--;
+                if (c == ']') {
+                    openBrackets--;
+                }
+            } else if (c == ',' && openBraces == 0 && openBrackets == 0) {
+                pairs.add(json.substring(start, i));
+                start = i + 1;
             }
         }
-        map.entrySet().stream().forEach(System.out::println);
-        return map;
+
+        pairs.add(json.substring(start));
+        return pairs;
     }
 
-    public static void main(String[] args) {
-        String json = "{\n" +
-                "\"id\": \"bb22f153-5ca3-4af9-847d-527549641e02\",\n" +
-                "\"brand\": \"Nokia\",\n" +
-                "\"model\": \"X100\",\n" +
-                "\"price\": \"999.99\",\n" +
-                "\"dateTime\": \"1961-11-14T10:45\"\n" +
-                "}";;
-        Pattern pattern = Pattern.compile("\"(.*?)\"");
-        Matcher matcher = pattern.matcher(json);
-        while (matcher.find()){
-            System.out.println(matcher.group());
+    private static int findColonIndex(String json) {
+        int openBrackets = 0;
+
+        for (int i = 0; i < json.length(); i++) {
+            char c = json.charAt(i);
+
+            if (c == '{' || c == '[') {
+                openBrackets++;
+            } else if (c == '}' || c == ']') {
+                openBrackets--;
+            } else if (c == ':' && openBrackets == 0) {
+                return i;
+            }
+        }
+        throw new IllegalArgumentException("Invalid JSON format: " + json);
+    }
+
+    private static List<String> splitJSONArrayElements(String json) {
+        List<String> elements = new ArrayList<>();
+        int openBraces = 0;
+        int openBrackets = 0;
+        int start = 0;
+
+        for (int i = 0; i < json.length(); i++) {
+            char c = json.charAt(i);
+
+            if (c == '{' || c == '[') {
+                openBraces++;
+                if (c == '[') {
+                    openBrackets++;
+                }
+            } else if (c == '}' || c == ']') {
+                openBraces--;
+                if (c == ']') {
+                    openBrackets--;
+                }
+            } else if (c == ',' && openBraces == 0 && openBrackets == 0) {
+                elements.add(json.substring(start, i));
+                start = i + 1;
+            }
         }
 
-
-
+        elements.add(json.substring(start));
+        return elements;
     }
-
-    //public static Map<String, Object> parseJsonToMap(String json) {
-    //    Map<String, Object> map = new HashMap<>();
-    //    Matcher matcher = Pattern.compile("\"(.*?)\"").matcher(json);
-    //    List<String> keys = new ArrayList<>();
-    //    while (matcher.find()) {
-    //        keys.add(matcher.group(1));
-    //    }
-    //    String[] values = json.replaceAll("\\s", "").split("\"[^\"]*\":");
-    //    for (int i = 1; i < values.length; i++) {
-    //        String value = values[i];
-    //        if (value.startsWith("{")) {
-    //            map.put(keys.get(i - 1), parseJsonToMap(value));
-    //        } else if (value.startsWith("[")) {
-    //            List<Object> list = new ArrayList<>();
-    //            Matcher m = Pattern.compile("\\{.*?}").matcher(value);
-    //            while (m.find()) {
-    //                list.add(parseJsonToMap(m.group()));
-    //            }
-    //            map.put(keys.get(i - 1), list);
-    //        } else {
-    //            map.put(keys.get(i - 1), value.replaceAll("[\",]", ""));
-    //        }
-    //    }
-    //    return map;
-    //}
-
 }
