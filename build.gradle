@@ -2,6 +2,27 @@ plugins {
     id 'java'
 }
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs.addAll([
+            '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+            '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED',
+            '--add-opens', 'java.base/java.text=ALL-UNNAMED',
+            '--add-opens', 'java.desktop/java.awt.font=ALL-UNNAMED'
+    ])
+}
+
+test {
+    useJUnitPlatform()
+    systemProperty 'java.awt.headless', true
+    systemProperty 'file.encoding', 'UTF-8'
+    jvmArgs([
+            '--add-opens=java.base/java.util=ALL-UNNAMED',
+            '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED',
+            '--add-opens=java.base/java.text=ALL-UNNAMED',
+            '--add-opens=java.desktop/java.awt.font=ALL-UNNAMED'
+    ])
+}
+
 group 'org.metlushko'
 version '1.0-SNAPSHOT'
 
@@ -16,7 +37,6 @@ ext {
 }
 
 dependencies {
-
     implementation "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
@@ -24,8 +44,4 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
-}
-
-test {
-    useJUnitPlatform()
 }

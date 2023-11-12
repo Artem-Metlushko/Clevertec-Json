@@ -1,11 +1,9 @@
-package org.metlushko.computer;
+package org.metlushko.computer.util;
 
 
 import org.metlushko.computer.entyti.enums.FieldType;
-import org.metlushko.computer.util.Parser;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Deserialization {
-    public static <T> T toInstance(String json, Class<T> clazz) {
+    public static <T> T readValue(String json, Class<T> clazz) {
 
         T objOrder = createNewInstance(clazz);
         Map<String, Object> map =  (Map<String, Object>) Parser.parseJSON(json);
@@ -33,10 +31,8 @@ public class Deserialization {
     }
 
     private static <T> void deserializeObject(T object, Map<String, Object> map, Class<T> clazz) {
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            String fieldName = entry.getKey();
-            Object fieldValue = entry.getValue();
 
+        map.forEach((fieldName, fieldValue) -> {
             try {
                 Field field = clazz.getDeclaredField(fieldName);
                 field.setAccessible(true);
@@ -45,7 +41,7 @@ public class Deserialization {
                 switch (getFieldType(fieldType)) {
                     case UUID -> field.set(object, UUID.fromString((String) fieldValue));
                     case STRING_OR_DOUBLE -> field.set(object, fieldValue);
-                    case LOCAL_DATE -> field.set(object, LocalDate.parse(fieldValue.toString()));
+                    case LOCAL_DATE -> field.set(object, LocalDate.parse((String )fieldValue));
                     case LIST -> {
                         List<Object> list = getList((List<Map<String, Object>>) fieldValue, field);
                         field.set(object, list);
@@ -54,14 +50,13 @@ public class Deserialization {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
+        });
     }
-    private static <T> List<Object> getList(List<Map<String, Object>> fieldValue, Field field) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        List<Map<String, Object>> listMap = fieldValue;
+    private static <T> List<Object> getList(List<Map<String, Object>> fieldValue, Field field)  {
         List<Object> list = new ArrayList<>();
-        for (Map<String, Object> itemMap : listMap) {
+        for (Map<String, Object> itemMap : fieldValue) {
             Class<?> itemClass = determineItemType(field);
-            Object item = itemClass.getDeclaredConstructor().newInstance();
+            Object item = createNewInstance(itemClass);
             deserializeObject((T) item, itemMap, (Class<T>) itemClass);
             list.add(item);
         }

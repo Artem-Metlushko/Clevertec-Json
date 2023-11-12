@@ -26,6 +26,7 @@ public class Parser {
                     Object parsedValue = parseJSON(value);
                     map.put(key, parsedValue);
                 }
+
                 return map;
 
             case ARRAY:
@@ -37,6 +38,7 @@ public class Parser {
                 for (String element : elements) {
                     list.add(parseJSON(element));
                 }
+
                 return list;
 
             case BOOLEAN:
@@ -73,9 +75,6 @@ public class Parser {
             return JsonType.UNKNOWN;
         }
     }
-
-
-
 
     private static List<String> splitJSONPairs(String json) {
         List<String> pairs = new ArrayList<>();

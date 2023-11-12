@@ -4,8 +4,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.metlushko.computer.entyti.Computer;
+import org.metlushko.computer.entyti.Engineer;
+import org.metlushko.computer.entyti.Order;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -20,7 +24,7 @@ public class TestData {
     private String name = "FreddyMercury";
 
     @Builder.Default
-    private LocalDateTime dateBirthday = LocalDateTime.of(1961, 11, 14, 10, 45);
+    private LocalDate date = LocalDate.of(1961, Month.FEBRUARY, 1);
 
     @Builder.Default
     private String brand = "Nokia";
@@ -29,24 +33,27 @@ public class TestData {
     private String model = "X100";
 
     @Builder.Default
-    private String jsonComputer = "{\n" +
-            "  \"id\": \"bb22f153-5ca3-4af9-847d-527549641e02\",\n" +
-            "  \"brand\": \"Nokia\",\n" +
-            "  \"model\": \"X100\",\n" +
-            "  \"price\": \"999.99\",\n" +
-            "  \"dateTime\": \"1961-11-14T10:45\"\n" +
-            "}";
-
-    @Builder.Default
     private Double price = 999.99;
 
+
+    private List<Computer> computers ;
+
+
+    private List<Engineer> engineers ;
+
     public Computer buildComputer(){
-       return new Computer(id,brand,model,price,dateBirthday);
+       return new Computer(id,name,brand,price, date);
     }
 
-    public String buildJsonForComputer(){
-        return jsonComputer;
+    public Engineer buildEngineer(){
+        return new Engineer(id,name,date,computers);
     }
+
+    public Order buildOrder(){
+        return new Order(id,name,date,engineers);
+    }
+
+
 
 
 
